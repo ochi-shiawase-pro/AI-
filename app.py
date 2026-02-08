@@ -16,17 +16,40 @@ if api_key:
     try:
         genai.configure(api_key=api_key)
         
-        # ★ここを一番頑丈な「gemini-pro」に変更しました★
-        # これならエラー404はまず出ません。
-        model = genai.GenerativeModel("gemini-pro")
+        # ★まずは「gemini-1.5-flash」を試します（個人用ならこれが最強です）
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
-        # チャット履歴の準備
+        # -----------------------------------------------------
+        # 🔍 診断ツール（ここをクリックすると正体がわかります！）
+        # -----------------------------------------------------
+        with st.expander("🔍 エラーが出る場合はここをクリック（キーの診断）"):
+            st.write("あなたのキーで使えるAI一覧:")
+            try:
+                available_models = []
+                for m in genai.list_models():
+                    if 'generateContent' in m.supported_generation_methods:
+                        st.code(m.name)
+                        available_models.append(m.name)
+                
+                # 自動判定コメント
+                if "models/gemini-1.5-flash" in available_models:
+                    st.success("✅ 「個人のキー」です！ gemini-1.5-flash が使えます！")
+                elif "models/gemini-2.5-flash" in available_models:
+                    st.warning("⚠️ 「会社用のキー」のようです。gemini-1.5-flash が無い可能性があります。")
+                else:
+                    st.error("❓ モデルが見つかりません。")
+                    
+            except Exception as e:
+                st.error(f"診断エラー: {e}")
+                st.write("キーが無効か、通信エラーです。")
+
+        # -----------------------------------------------------
+        # チャット機能（こっそりメモ作戦）
+        # -----------------------------------------------------
         if "messages" not in st.session_state:
             st.session_state.messages = []
             
-            # ★【こっそりメモ作戦】★
-            # 履歴の「一番最初」に、案内人の設定をこっそり入れておきます。
-            # エラーが出ずに、確実にキャラになりきってくれます。
+            # 案内人の設定をこっそり履歴に入れる
             persona_text = """
             あなたは「みなみしょうじ先生の幸せのひとり言」を深く愛する「誠実な案内人」です。
             以下のルールを守って会話してください：
@@ -35,35 +58,29 @@ if api_key:
             3. 先生の「無限の愛」の教えを元に、優しく語りかけてください。
             4. 決して否定せず、すべてを肯定して受け入れてください。
             """
-            
-            # AIにだけ見えるように履歴に追加（ユーザーには見えません）
             st.session_state.messages.append({"role": "user", "content": persona_text})
             st.session_state.messages.append({"role": "model", "content": "承知いたしました。私は誠実な案内人として、相談者様の心に寄り添います。"})
 
-        # 画面に会話を表示（最初の設定用メッセージは隠します）
+        # 画面表示
         for i, message in enumerate(st.session_state.messages):
-            if i >= 2: # 0番目と1番目（設定用）はスキップして表示
+            if i >= 2: 
                 role = "user" if message["role"] == "user" else "assistant"
                 with st.chat_message(role):
                     st.markdown(message["content"])
 
         # 入力と返信
         if prompt := st.chat_input("ここに入力してください..."):
-            # ユーザーの言葉を表示
             with st.chat_message("user"):
                 st.markdown(prompt)
             st.session_state.messages.append({"role": "user", "content": prompt})
 
-            # 案内人からの返信
             with st.chat_message("assistant"):
                 try:
-                    # 今までの会話（設定含む）をAIに渡すための準備
                     history_for_ai = []
                     for m in st.session_state.messages:
                         role = "user" if m["role"] == "user" else "model"
                         history_for_ai.append({"role": role, "parts": [m["content"]]})
                     
-                    # AIに会話を投げます
                     chat = model.start_chat(history=history_for_ai[:-1]) 
                     response = chat.send_message(prompt)
                     
@@ -72,7 +89,6 @@ if api_key:
                     
                 except Exception as e:
                     st.error(f"エラーが発生しました: {e}")
-                    st.error("もしエラーが続く場合は、APIキーが「個人のGmail」のものか確認してください！")
 
     except Exception as e:
         st.error(f"APIキーの設定中にエラーが発生しました: {e}")
