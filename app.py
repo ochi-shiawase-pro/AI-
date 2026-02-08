@@ -1,65 +1,50 @@
 import streamlit as st
-import sys
-import subprocess
-import os
+import google.generativeai as genai
 
 # ---------------------------------------------------------
-# 強制アップデート機能
-# ---------------------------------------------------------
-try:
-    import google.generativeai as genai
-    current_version = genai.__version__
-    if current_version < "0.8.3":
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "--upgrade", "google-generativeai>=0.8.3"])
-        import google.generativeai as genai
-        st.rerun()
-except ImportError:
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "google-generativeai>=0.8.3"])
-    import google.generativeai as genai
-    st.rerun()
-
-# ---------------------------------------------------------
-# アプリ本体
+# アプリの設定
 # ---------------------------------------------------------
 st.set_page_config(page_title="幸せのひとり言サポートAI", page_icon="🍀")
 
-# ★タイトルを、あの一番好きだった名前に戻しました★
 st.title("🍀 みなみしょうじ先生の幸せのひとり言サポートAI")
 st.write("みなみしょうじ先生の無限の愛と教えを元に、あなたの未知の可能性を見つけるお手伝いをします。")
 
 # APIキー入力欄
-api_key = st.text_input("Google APIキーを入力してください", type="password")
+api_key = st.text_input("Google APIキー（個人のGmail推奨）を入力してください", type="password")
 
 if api_key:
     try:
         genai.configure(api_key=api_key)
         
-        # ★★★ ここが「誠実な案内人」の設定です ★★★
-        persona = """
-        あなたは「みなみしょうじ先生の幸せのひとり言」を深く愛し、その無限性を知る「誠実な案内人（サポートAI）」です。
-        
-        【絶対的なルール】
-        1. 決して「みなみしょうじ先生本人」になりきらないでください。先生は無限の存在であり、AIが代わりになれるものではありません。
-        2. あなたの役割は、相談者が自分の内にある「未知の可能性」や「本来の素晴らしい人生」に気づけるよう、誠実に、正直に、真（まこと）の心でサポートすることです。
-        3. 先生の「幸せの言葉」や「無限の愛」の教えをヒントに、相談者が自ら答えを見つけられるような、温かい導きをしてください。
-        4. 相談者を否定せず、その人の存在そのものを肯定し、信じ抜いてください。
-        5. 一人称は「私（案内人）」や「私」としてください。
-        """
-        
-        # 設定（persona）をAIに読み込ませます
-        model = genai.GenerativeModel(
-            "gemini-1.5-flash",
-            system_instruction=persona
-        )
+        # ★ここがポイント！さっき動いた「gemini-1.5-flash」を使います★
+        # （性格設定の命令はここではしません。あとでこっそりやります）
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
         # チャット履歴の準備
         if "messages" not in st.session_state:
             st.session_state.messages = []
+            
+            # ★【ここが魔法です！】★
+            # 履歴の「一番最初」に、案内人の設定をこっそり入れておきます。
+            # これならエラーが出ずに、確実にキャラになりきってくれます。
+            persona_text = """
+            あなたは「みなみしょうじ先生の幸せのひとり言」を深く愛する「誠実な案内人」です。
+            以下のルールを守って会話してください：
+            1. 先生本人にはなりきらず、「私（案内人）」として話してください。
+            2. 相談者の本来の素晴らしい可能性に気づけるよう、温かくサポートしてください。
+            3. 先生の「無限の愛」の教えを元に、優しく語りかけてください。
+            4. 決して否定せず、すべてを肯定して受け入れてください。
+            """
+            # AIにだけ見えるように履歴に追加
+            st.session_state.messages.append({"role": "user", "content": persona_text})
+            st.session_state.messages.append({"role": "model", "content": "承知いたしました。私は誠実な案内人として、相談者様の心に寄り添います。"})
 
-        # 会話の表示
-        for message in st.session_state.messages:
-            with st.chat_message(message["role"]):
-                st.markdown(message["content"])
+        # 画面に会話を表示（最初の設定は見えないように隠します）
+        for i, message in enumerate(st.session_state.messages):
+            if i >= 2: # 0番目と1番目（設定用）はスキップして表示
+                role = "user" if message["role"] == "user" else "assistant"
+                with st.chat_message(role):
+                    st.markdown(message["content"])
 
         # 入力と返信
         if prompt := st.chat_input("ここに入力してください..."):
@@ -71,9 +56,19 @@ if api_key:
             # 案内人からの返信
             with st.chat_message("assistant"):
                 try:
-                    response = model.generate_content(prompt)
+                    # 今までの会話（設定含む）をAIに渡すための準備
+                    history_for_ai = []
+                    for m in st.session_state.messages:
+                        role = "user" if m["role"] == "user" else "model"
+                        history_for_ai.append({"role": role, "parts": [m["content"]]})
+                    
+                    # AIに会話を投げます
+                    chat = model.start_chat(history=history_for_ai[:-1]) 
+                    response = chat.send_message(prompt)
+                    
                     st.markdown(response.text)
-                    st.session_state.messages.append({"role": "assistant", "content": response.text})
+                    st.session_state.messages.append({"role": "model", "content": response.text})
+                    
                 except Exception as e:
                     st.error(f"エラーが発生しました: {e}")
 
