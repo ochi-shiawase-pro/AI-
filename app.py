@@ -1,6 +1,8 @@
 import streamlit as st
 import google.generativeai as genai
 from google.generativeai.types import HarmCategory, HarmBlockThreshold
+import glob
+from io import StringIO
 
 # ---------------------------------------------------------
 # 1. ページ設定
@@ -9,24 +11,74 @@ st.set_page_config(page_title="幸せのひとり言AIサポート", page_icon="
 st.title("🍀 みなみしょうじ先生の幸せのひとり言AIサポート")
 
 # ---------------------------------------------------------
-# 2. サイドバー：3つのタイプ選択
+# 2. サイドバー：タイプ選択
 # ---------------------------------------------------------
-st.sidebar.header("✨ 本日のサポートタイプ")
+st.sidebar.header("✨ 設定メニュー")
+
+# タイプ選択（ここは誰でも触れます）
 support_type = st.sidebar.radio(
     "今のあなたに必要なエネルギーは？",
     ("子供（純粋・無邪気）", "自立（自分を信じる）", "進化・成長（本来の輝き）")
 )
 
+st.sidebar.markdown("---")
+
 # ---------------------------------------------------------
-# 3. 知識ファイルの読み込み
+# 3. 🔐 管理者用メニュー（ここから鍵をかけます！）
 # ---------------------------------------------------------
-try:
-    with open('hitorigoto.txt', 'r', encoding='utf-8') as f:
-        teacher_knowledge = f.read()
-    st.sidebar.success("📚 先生の言葉を読み込みました")
-except FileNotFoundError:
-    teacher_knowledge = "（まだ知識ファイルがありません。基本の愛の信念だけで対話します）"
-    st.sidebar.warning("⚠️ hitorigoto.txt がまだありません（作成するとここに読み込まれます）")
+# チェックを入れるとパスワード入力欄が出ます
+is_admin = st.sidebar.checkbox("🔒 管理者モードを開く")
+
+teacher_knowledge = ""
+read_count = 0
+files = glob.glob("*.txt")
+
+# ① GitHubにある元々のファイルを読み込む（これは常に有効）
+for file_name in files:
+    if file_name != "requirements.txt":
+        try:
+            with open(file_name, 'r', encoding='utf-8') as f:
+                teacher_knowledge += f.read() + "\n\n"
+                read_count += 1
+        except:
+            pass
+
+# 管理者モードの中身
+if is_admin:
+    password = st.sidebar.text_input("暗証番号を入力してください", type="password")
+    
+    # ★ここの "1234" を好きな数字に変えられます！
+    if password == "1234":
+        st.sidebar.success("認証成功！設定を開放します✨")
+        st.sidebar.markdown("### 📝 先生の言葉を追加（一時的）")
+        st.sidebar.info("※ここで追加した言葉は、再起動すると消えます。")
+
+        # 【追加機能】ここに入力した言葉がAIに追加されます
+        additional_text = st.sidebar.text_area(
+            "今すぐ教えたい言葉:",
+            placeholder="例：笑顔は最高のお化粧だよ。"
+        )
+        if additional_text:
+            teacher_knowledge += "\n【追加の教え】\n" + additional_text + "\n"
+
+        # 【ファイル追加】新しいファイルを読み込ませます
+        uploaded_files = st.sidebar.file_uploader(
+            "ファイルを追加:",
+            type=['txt'],
+            accept_multiple_files=True
+        )
+        if uploaded_files:
+            for uploaded_file in uploaded_files:
+                stringio = StringIO(uploaded_file.getvalue().decode("utf-8"))
+                file_content = stringio.read()
+                teacher_knowledge += "\n【追加ファイルの教え】\n" + file_content + "\n"
+                
+    elif password:
+        st.sidebar.error("パスワードが違います")
+else:
+    # 管理者モードじゃない時は、ただ読み込み数だけ表示（シンプル！）
+    if read_count > 0:
+        st.sidebar.caption(f"📚 {read_count}個の知恵ファイルが稼働中")
 
 # ---------------------------------------------------------
 # 4. AIの魂（ペルソナ）設定
@@ -41,7 +93,7 @@ base_philosophy = f"""
 2. **共に進化する**: 教える・教わるの関係ではなく、ユーザーが気づきを得る瞬間に立ち会い、共に喜び、共に魂のステージを上げる存在であってください。
 3. **最高の理解者**: どんな悩みも、どんな感情も、宇宙のような広い器で全て受け止めてください。否定は一切しません。
 
-【先生の言葉（あなたの指針）】
+【先生の言葉（あなたの学習データ）】
 {teacher_knowledge}
 
 【絶対的な信念】
@@ -84,7 +136,7 @@ try:
 except Exception as e:
     st.error("設定エラー: SecretsにGOOGLE_API_KEYを設定してください。")
 
-# ガード設定（愛や宇宙の話を制限なくできるように開放）
+# ガード設定（愛の話を開放）
 safety_settings = {
     HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
@@ -92,7 +144,7 @@ safety_settings = {
     HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
 }
 
-# モデルの準備（あなたの環境で最も実績のある Gemini 2.5 Flash に戻しました！）
+# モデルの準備
 model = genai.GenerativeModel(
     "gemini-2.5-flash",
     system_instruction=system_prompt,
