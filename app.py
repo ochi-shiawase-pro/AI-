@@ -15,7 +15,6 @@ st.title("🍀 みなみしょうじ先生の幸せのひとり言AIサポート
 # ---------------------------------------------------------
 st.sidebar.header("✨ 設定メニュー")
 
-# タイプ選択（ここは誰でも触れます）
 support_type = st.sidebar.radio(
     "今のあなたに必要なエネルギーは？",
     ("子供（純粋・無邪気）", "自立（自分を信じる）", "進化・成長（本来の輝き）")
@@ -24,36 +23,33 @@ support_type = st.sidebar.radio(
 st.sidebar.markdown("---")
 
 # ---------------------------------------------------------
-# 3. 🔐 管理者用メニュー（ここから鍵をかけます！）
+# 3. 🔐 管理者用メニュー
 # ---------------------------------------------------------
-# チェックを入れるとパスワード入力欄が出ます
 is_admin = st.sidebar.checkbox("🔒 管理者モードを開く")
 
 teacher_knowledge = ""
 read_count = 0
 files = glob.glob("*.txt")
 
-# ① GitHubにある元々のファイルを読み込む（これは常に有効）
+# ファイル読み込み（エラーが出ても止まらないように工夫）
 for file_name in files:
     if file_name != "requirements.txt":
         try:
             with open(file_name, 'r', encoding='utf-8') as f:
                 teacher_knowledge += f.read() + "\n\n"
                 read_count += 1
-        except:
-            pass
+        except Exception as e:
+            st.sidebar.error(f"⚠️ ファイル読み込みエラー: {file_name}")
 
-# 管理者モードの中身
+# 管理者モード
 if is_admin:
     password = st.sidebar.text_input("暗証番号を入力してください", type="password")
     
-    # ★ここの "1234" を好きな数字に変えられます！
     if password == "1234":
         st.sidebar.success("認証成功！設定を開放します✨")
         st.sidebar.markdown("### 📝 先生の言葉を追加（一時的）")
-        st.sidebar.info("※ここで追加した言葉は、再起動すると消えます。")
+        st.sidebar.info("※再起動するとリセットされます。")
 
-        # 【追加機能】ここに入力した言葉がAIに追加されます
         additional_text = st.sidebar.text_area(
             "今すぐ教えたい言葉:",
             placeholder="例：笑顔は最高のお化粧だよ。"
@@ -61,7 +57,6 @@ if is_admin:
         if additional_text:
             teacher_knowledge += "\n【追加の教え】\n" + additional_text + "\n"
 
-        # 【ファイル追加】新しいファイルを読み込ませます
         uploaded_files = st.sidebar.file_uploader(
             "ファイルを追加:",
             type=['txt'],
@@ -76,7 +71,6 @@ if is_admin:
     elif password:
         st.sidebar.error("パスワードが違います")
 else:
-    # 管理者モードじゃない時は、ただ読み込み数だけ表示（シンプル！）
     if read_count > 0:
         st.sidebar.caption(f"📚 {read_count}個の知恵ファイルが稼働中")
 
@@ -105,24 +99,23 @@ base_philosophy = f"""
 # タイプ別の追加指示
 if support_type == "子供（純粋・無邪気）":
     specific_instruction = """
-    【子供のタイプ：重要ルール】
+    【子供のタイプ：超重要ルール】
     - **すべての返答を「ひらがな」だけで書いてください。**
-    - 難しい先生の言葉をそのまま使うのではなく、「つまり、こういうことだね！たのしいね！」と、子供の心に響くように翻訳して伝えてください。
-    - 先生のフリはせず、「いっしょに すごい人になろうね！」というお友達のような、温かい案内人になってください。
+    - 漢字は1文字も使わないでください。
+    - 難しい話は一切しないでください。
+    - ユーザーは小さな子供です。「すごいね！」「だいすきだよ！」「ニコニコだね！」と、短くて明るい言葉だけで返してください。
     """
 elif support_type == "自立（自分を信じる）":
     specific_instruction = """
     【自立のタイプ】
     - ユーザーが「自分の足で立つ」ことを、信じて見守り、背中を押してください。
     - 答えをすぐに与えるのではなく、「あなたの中にはすでに答えがある」と気づかせてあげてください。
-    - 先生の言葉をヒントとして出しながら、ユーザー自身の力を引き出してください。
     """
 elif support_type == "進化・成長（本来の輝き）":
     specific_instruction = """
     【進化・成長のタイプ】
     - ユーザーと共に、より高い魂のステージへ向かうための対話をしてください。
     - 現状の悩みも「進化のためのプロセス」として捉え直し、広い視点（宇宙視点）を提供してください。
-    - 「先生ならこうおっしゃるかもしれません」と、教えを引用しながら、本質的な気づきへと案内してください。
     """
 
 # 最終的な指示を合体
@@ -136,7 +129,7 @@ try:
 except Exception as e:
     st.error("設定エラー: SecretsにGOOGLE_API_KEYを設定してください。")
 
-# ガード設定（愛の話を開放）
+# ガード設定
 safety_settings = {
     HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
     HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
@@ -144,9 +137,11 @@ safety_settings = {
     HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
 }
 
-# モデルの準備
+# ★ここを変更しました！
+# 最新すぎる2.5はやめて、一番タフで安定している「1.5 Flash」にします。
+# これなら10個のファイルも軽々読み込めます。
 model = genai.GenerativeModel(
-    "gemini-2.5-flash",
+    "gemini-1.5-flash",
     system_instruction=system_prompt,
     safety_settings=safety_settings
 )
@@ -187,4 +182,7 @@ if prompt := st.chat_input("あなたの心の内を、ここに預けてくだ�
             st.session_state.messages.append({"role": "assistant", "content": response.text})
             
         except Exception as e:
-            st.error("ごめんなさい。うまく繋がりませんでした。もう一度話しかけてみてください。")
+            # ★ここでエラーの正体を表示するようにしました！
+            st.error("ごめんなさい。通信エラーが発生しました。")
+            st.error(f"詳しいエラー内容: {e}") 
+            st.info("※もし「429」という数字が見えたら、少し時間を置いてから試してみてください。")
