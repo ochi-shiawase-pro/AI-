@@ -4,7 +4,7 @@ import subprocess
 import os
 
 # ---------------------------------------------------------
-# 【緊急】強制アップデート機能（このまま残します）
+# 強制アップデート機能
 # ---------------------------------------------------------
 try:
     import google.generativeai as genai
@@ -24,7 +24,7 @@ except ImportError:
 st.set_page_config(page_title="幸せ相談bot", page_icon="🍀")
 
 st.title("🍀 みなみしょうじ先生の幸せ相談bot")
-st.write(f"System Version: {genai.__version__}") 
+st.write(f"Using Model: Gemini 2.5 Flash") 
 st.write("あなたの悩みを聞かせてください。心を込めてお答えします。")
 
 api_key = st.text_input("Google APIキーを入力してください", type="password")
@@ -33,19 +33,8 @@ if api_key:
     try:
         genai.configure(api_key=api_key)
         
-        # ★ここが変更点！「gemini-pro」という標準モデルを使います★
-        # （もし1.5-flashがダメでも、これなら動く可能性が高いです）
-        model = genai.GenerativeModel("gemini-pro")
-
-        # 【確認用】使えるモデルの一覧を表示（デバッグ用）
-        with st.expander("🛠️ システム管理者用：モデル診断（ここをクリック）"):
-            try:
-                st.write("あなたのキーで使えるAI一覧:")
-                for m in genai.list_models():
-                    if 'generateContent' in m.supported_generation_methods:
-                        st.code(m.name)
-            except Exception as e:
-                st.error(f"モデル一覧が取得できませんでした: {e}")
+        # ★ここが大正解！あなたのリストにあった最新モデルを使います★
+        model = genai.GenerativeModel("gemini-2.5-flash")
 
         # チャット履歴
         if "messages" not in st.session_state:
@@ -67,7 +56,6 @@ if api_key:
                     st.session_state.messages.append({"role": "assistant", "content": response.text})
                 except Exception as e:
                     st.error(f"エラーが発生しました: {e}")
-                    st.error("「gemini-pro」でもエラーが出る場合、APIキーの設定か、Google Cloudの有効化が必要です。")
 
     except Exception as e:
         st.error(f"APIキーの設定中にエラーが発生しました: {e}")
