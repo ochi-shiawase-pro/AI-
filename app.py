@@ -31,7 +31,7 @@ teacher_knowledge = ""
 read_count = 0
 files = glob.glob("*.txt")
 
-# ファイル読み込み（エラーが出ても止まらないように工夫）
+# ファイル読み込み
 for file_name in files:
     if file_name != "requirements.txt":
         try:
@@ -138,10 +138,9 @@ safety_settings = {
 }
 
 # ★ここを変更しました！
-# 最新すぎる2.5はやめて、一番タフで安定している「1.5 Flash」にします。
-# これなら10個のファイルも軽々読み込めます。
+# 「gemini-pro」という、一番有名で確実に動くモデルに戻しました。
 model = genai.GenerativeModel(
-    "gemini-1.5-flash",
+    "gemini-pro",
     system_instruction=system_prompt,
     safety_settings=safety_settings
 )
@@ -182,7 +181,5 @@ if prompt := st.chat_input("あなたの心の内を、ここに預けてくだ�
             st.session_state.messages.append({"role": "assistant", "content": response.text})
             
         except Exception as e:
-            # ★ここでエラーの正体を表示するようにしました！
             st.error("ごめんなさい。通信エラーが発生しました。")
-            st.error(f"詳しいエラー内容: {e}") 
-            st.info("※もし「429」という数字が見えたら、少し時間を置いてから試してみてください。")
+            st.error(f"詳しいエラー内容: {e}")
