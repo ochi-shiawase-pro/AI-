@@ -39,7 +39,7 @@ if api_key:
     try:
         genai.configure(api_key=api_key)
         # モデルは最新かつ高速な Flash を使用
-        model = genai.GenerativeModel("models/gemini-1.5-pro")
+        model = genai.GenerativeModel("gemini-1.5-flash-latest")
 
         # -----------------------------------------------------
         # ★★★ 自動ファイル読み込み機能 ★★★
