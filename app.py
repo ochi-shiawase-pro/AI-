@@ -16,10 +16,9 @@ if api_key:
     try:
         genai.configure(api_key=api_key)
         
-        # ★ここを「gemini-pro」に変更しました！★
-        # あなたの「個人の鍵」なら、これも無料で自由に使えます。
-        # そして、これは昔からあるので、エラーが絶対に起きません。
-        model = genai.GenerativeModel("gemini-pro")
+        # ★ここを、診断で存在が確認された「gemini-1.5-flash」に戻しました！
+        # これがあなたのキーにおける「正解」です。
+        model = genai.GenerativeModel("gemini-1.5-flash")
 
         # チャット履歴の準備
         if "messages" not in st.session_state:
