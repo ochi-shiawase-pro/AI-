@@ -16,16 +16,15 @@ if api_key:
     try:
         genai.configure(api_key=api_key)
         
-        # ★ここを、診断で存在が確認された「gemini-1.5-flash」に戻しました！
-        # これがあなたのキーにおける「正解」です。
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        # ★ここが大正解！あなたのリストにあった「gemini-2.0-flash」を使います★
+        # これなら「404（見つからない）」とは言わせません！
+        model = genai.GenerativeModel("gemini-2.0-flash")
 
         # チャット履歴の準備
         if "messages" not in st.session_state:
             st.session_state.messages = []
             
             # ★【案内人の設定：こっそりメモ方式】★
-            # 案内人の設定をこっそり履歴に入れます
             persona_text = """
             あなたは「みなみしょうじ先生の幸せのひとり言」を深く愛し、その無限性を知る「誠実な案内人（サポートAI）」です。
             
@@ -70,6 +69,9 @@ if api_key:
                     
                 except Exception as e:
                     st.error(f"エラーが発生しました: {e}")
+                    # もし2.0もダメなら、最後の手段「gemini-flash-latest」を試すヒントを出します
+                    if "404" in str(e):
+                         st.error("もしこれでも404が出る場合は、モデル名を「gemini-flash-latest」に変えてみてください。")
 
     except Exception as e:
         st.error(f"APIキーの設定中にエラーが発生しました: {e}")
