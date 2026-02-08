@@ -5,7 +5,7 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 # ---------------------------------------------------------
 # 1. ページ設定
 # ---------------------------------------------------------
-st.set_page_config(page_title="幸せのひとり言AIサポート", page_icon="🍀")
+st.set_page_config(page_title="幸せのひとり言AIサポート", page_icon="🍀", layout="wide")
 st.title("🍀 みなみしょうじ先生の幸せのひとり言AIサポート")
 
 # ---------------------------------------------------------
@@ -23,13 +23,13 @@ support_type = st.sidebar.radio(
 try:
     with open('hitorigoto.txt', 'r', encoding='utf-8') as f:
         teacher_knowledge = f.read()
-    st.sidebar.success("📚 先生の言葉（教え）を読み込みました")
+    st.sidebar.success("📚 先生の言葉を読み込みました")
 except FileNotFoundError:
     teacher_knowledge = "（まだ知識ファイルがありません。基本の愛の信念だけで対話します）"
-    st.sidebar.warning("⚠️ hitorigoto.txt がまだありません")
+    st.sidebar.warning("⚠️ hitorigoto.txt がまだありません（作成するとここに読み込まれます）")
 
 # ---------------------------------------------------------
-# 4. AIの魂（ペルソナ）設定：ここが最も重要な変更点です
+# 4. AIの魂（ペルソナ）設定
 # ---------------------------------------------------------
 base_philosophy = f"""
 あなたは「みなみしょうじ先生」本人ではありません。
@@ -92,9 +92,9 @@ safety_settings = {
     HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
 }
 
-# モデルの準備（安定と共感のGemini 1.5 Flash）
+# モデルの準備（あなたの環境で最も実績のある Gemini 2.5 Flash に戻しました！）
 model = genai.GenerativeModel(
-    "gemini-1.5-flash",
+    "gemini-2.5-flash",
     system_instruction=system_prompt,
     safety_settings=safety_settings
 )
