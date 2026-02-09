@@ -31,11 +31,11 @@ for f in files:
             pass
 
 
-# --- 3. AIの準備（ここが最新版です！） ---
+# --- 3. AIの準備 ---
 
 try:
     
-    # 新しい書き方でAIを用意します
+    # 鍵をセットする
     client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
 
 except:
@@ -73,9 +73,9 @@ if prompt := st.chat_input("ここに入力してね"):
     with st.chat_message("assistant"):
         
         try:
-            # 最新のAI（gemini-1.5-flash）を使います
+            # ★ここを変えました！正式名称を使います★
             response = client.models.generate_content(
-                model="gemini-1.5-flash",
+                model="gemini-1.5-flash-001",
                 contents=full_prompt
             )
             
