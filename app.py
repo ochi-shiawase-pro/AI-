@@ -43,9 +43,9 @@ if prompt := st.chat_input("ここに入力してね"):
 
     with st.chat_message("assistant"):
         try:
-            # ★ついに判明した正解の名前を使います！★
+            # ★安定して動く「gemini-2.0-flash」に変更しました！★
             response = client.models.generate_content(
-                model="gemini-2.5-flash", 
+                model="gemini-2.0-flash", 
                 contents=full_prompt
             )
             
