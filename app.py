@@ -42,16 +42,30 @@ if prompt := st.chat_input("ここに入力してね"):
     full_prompt += "【質問】\n" + prompt
 
     with st.chat_message("assistant"):
-        try:
-            # ★ここを一番タフな「定番モデル」に戻しました！★
-            # 今の新しいエンジンなら、これが一番安定して動きます！
-            response = client.models.generate_content(
-                model="gemini-1.5-flash", 
-                contents=full_prompt
-            )
-            
-            st.write(response.text)
-            st.session_state.history.append({"role": "assistant", "message": response.text})
-            
-        except Exception as e:
-            st.error(f"エラーが発生しました: {e}")
+        
+        # ★ここが最強ポイント！★
+        # 3つのモデルを順番に試して、繋がったものを使います
+        model_list = ["gemini-2.0-flash", "gemini-1.5-pro", "gemini-pro"]
+        success = False
+        
+        for model_name in model_list:
+            try:
+                # 順番にノックしてみる
+                response = client.models.generate_content(
+                    model=model_name, 
+                    contents=full_prompt
+                )
+                
+                # 成功したら表示して終了！
+                st.write(response.text)
+                st.session_state.history.append({"role": "assistant", "message": response.text})
+                success = True
+                break # 成功したのでループを抜ける
+                
+            except:
+                # 失敗したら次のモデルへ（何もしない）
+                continue
+        
+        # もし全部ダメだったらエラーを出す
+        if not success:
+            st.error("混み合っていて繋がりませんでした。1分待ってからもう一度試してください。")
