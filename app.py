@@ -43,9 +43,10 @@ if prompt := st.chat_input("ここに入力してね"):
 
     with st.chat_message("assistant"):
         try:
-            # ★安定して動く「gemini-2.0-flash」に変更しました！★
+            # ★ここを一番タフな「定番モデル」に戻しました！★
+            # 今の新しいエンジンなら、これが一番安定して動きます！
             response = client.models.generate_content(
-                model="gemini-2.0-flash", 
+                model="gemini-1.5-flash", 
                 contents=full_prompt
             )
             
