@@ -1,26 +1,16 @@
 import streamlit as st
 
 
-
-
-import google.generativeai as genai
-
-
+from google import genai
 
 
 import glob
 
 
-
-
 st.set_page_config(page_title="AI", page_icon="🍀")
 
 
-
-
 st.title("🍀 みなみしょうじ先生AI")
-
-
 
 
 # --- 先生の言葉を読み込む ---
@@ -34,28 +24,21 @@ for f in files:
 
     if "req" not in f:
         
-        # エラーが出ても無視して読み込む設定
         content = open(f, encoding='utf-8', errors='ignore').read()
         
         text += content + "\n\n"
 
 
-
-
-# --- AIの設定（ここを最新版に変えました！） ---
+# --- 新しいAIの設定（google-genai） ---
 
 try:
 
-    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-    
-    # 最新の「gemini-1.5-flash」を使います
-    model = genai.GenerativeModel("gemini-1.5-flash")
+    # ここが新しくなりました！
+    client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
 
 except:
 
-    st.error("APIキーの設定エラーです")
-
-
+    st.error("APIキーの設定エラー")
 
 
 # --- チャットの履歴 ---
@@ -72,13 +55,10 @@ for m in st.session_state.msgs:
         st.write(m["c"])
 
 
-
-
 # --- チャットのやりとり ---
 
 if prompt := st.chat_input("ここに入力"):
 
-    # ユーザーの言葉を表示
     with st.chat_message("user"):
 
         st.write(prompt)
@@ -86,7 +66,6 @@ if prompt := st.chat_input("ここに入力"):
     st.session_state.msgs.append({"r": "user", "c": prompt})
 
 
-    # AIへの指示（先生になりきる）
     prompt_text = "あなたはみなみしょうじ先生です。\n"
     
     prompt_text += "【先生の教え】\n" + text + "\n\n"
@@ -98,12 +77,15 @@ if prompt := st.chat_input("ここに入力"):
         prompt_text += m["r"] + ": " + m["c"] + "\n"
 
 
-    # AIからの返事
     with st.chat_message("ai"):
 
         try:
             
-            response = model.generate_content(prompt_text)
+            # 新しい操縦方法でAIを動かします
+            response = client.models.generate_content(
+                model="gemini-1.5-flash", 
+                contents=prompt_text
+            )
             
             st.write(response.text)
             
