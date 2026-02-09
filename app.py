@@ -43,28 +43,14 @@ if prompt := st.chat_input("ここに入力してね"):
 
     with st.chat_message("assistant"):
         try:
-            # ★ここが特製ポイント！★
-            # まず、一番性能が良い「gemini-1.5-pro」で試します
+            # ★ついに判明した正解の名前を使います！★
             response = client.models.generate_content(
-                model="gemini-1.5-pro", 
+                model="gemini-2.5-flash", 
                 contents=full_prompt
             )
+            
             st.write(response.text)
             st.session_state.history.append({"role": "assistant", "message": response.text})
             
-        except Exception as first_error:
-            # もしダメなら、使えるモデルの一覧を画面に表示して教えてくれます
-            try:
-                st.error("設定されたモデルが見つかりませんでした。利用可能なモデルを探します...")
-                
-                # あなたが使えるモデルの名前を全部調べます
-                available_models = []
-                for m in client.models.list():
-                    if "gemini" in m.name:
-                        available_models.append(m.name)
-                
-                st.error(f"【重要】使えるモデル一覧: {available_models}")
-                st.warning("↑この一覧の中に正解があります！教えてください！")
-                
-            except Exception as e:
-                st.error(f"エラーの正体: {first_error}")
+        except Exception as e:
+            st.error(f"エラーが発生しました: {e}")
