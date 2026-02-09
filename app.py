@@ -24,20 +24,22 @@ for file_name in files:
         except:
             pass
 
-# 読み込み結果の表示
-st.sidebar.header("📚 データベース状況")
+# サイドバー：状態表示
+st.sidebar.header("✨ システム状況")
+st.sidebar.caption("🚀 Engine: Gemini 1.5 Flash (最新版)")
+
 if read_count > 0:
-    st.sidebar.success(f"現在、{read_count}個のファイルを読み込んでいます。\n先生の言葉はバッチリ入っています！")
+    st.sidebar.success(f"📚 {read_count}個のファイルを読み込み中\n先生の言葉、バッチリ入ってます！")
 else:
-    st.sidebar.error("⚠️ テキストファイルが見つかりません。")
+    st.sidebar.error("⚠️ テキストファイルが見つかりません")
 
 # ---------------------------------------------------------
-# 3. 設定
+# 3. 設定メニュー
 # ---------------------------------------------------------
 st.sidebar.markdown("---")
-st.sidebar.header("✨ 設定")
+st.sidebar.header("✨ サポートタイプ")
 support_type = st.sidebar.radio(
-    "サポートタイプを選択",
+    "今のあなたに必要なエネルギーは？",
     ("子供（純粋・無邪気）", "自立（自分を信じる）", "進化・成長（本来の輝き）")
 )
 
@@ -82,14 +84,12 @@ elif support_type == "進化・成長（本来の輝き）":
 full_prompt = base_philosophy + "\n\n" + specific_instruction
 
 # ---------------------------------------------------------
-# 5. AIモデルの設定（ここを修正しました！）
+# 5. AIモデルの設定（★ここが最新版！）
 # ---------------------------------------------------------
 try:
     genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
     
-    # ★ここが重要！
-    # エラーが出ていた「gemini-pro」をやめて、
-    # 最新の「gemini-1.5-flash」を指定します。これで動きます！
+    # ついに解禁！最新・最速モデル「Gemini 1.5 Flash」
     model = genai.GenerativeModel("gemini-1.5-flash")
     
 except Exception as e:
@@ -101,25 +101,29 @@ except Exception as e:
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
+# 過去の会話を表示
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
+# 入力エリア
 if prompt := st.chat_input("ここに入力してね"):
+    # ユーザーの言葉
     with st.chat_message("user"):
         st.write(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
+    # AIの返信
     with st.chat_message("assistant"):
         try:
-            # AIに渡す会話データの準備
+            # AIに渡す履歴データの作成
             history_for_ai = []
             
-            # 最初に「先生の魂」を注入
+            # 魂（システム設定）を注入
             history_for_ai.append({"role": "user", "parts": [full_prompt]})
             history_for_ai.append({"role": "model", "parts": ["はい、承知いたしました。"]})
             
-            # 画面の会話履歴を追加
+            # 会話履歴を追加
             for m in st.session_state.messages:
                 role = "user" if m["role"] == "user" else "model"
                 history_for_ai.append({"role": role, "parts": [m["content"]]})
@@ -128,9 +132,10 @@ if prompt := st.chat_input("ここに入力してね"):
             chat = model.start_chat(history=history_for_ai)
             response = chat.send_message(prompt)
             
+            # 画面に表示
             st.write(response.text)
             st.session_state.messages.append({"role": "assistant", "content": response.text})
             
         except Exception as e:
             st.error("ごめんなさい。うまく繋がりませんでした。")
-            st.error(f"エラーの内容: {e}")
+            st.code(f"エラー内容: {e}") # エラーが出たら詳細を表示
