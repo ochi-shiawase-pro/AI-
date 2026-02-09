@@ -1,30 +1,17 @@
 import streamlit as st import google.generativeai as genai import glob
 
----------------------------------------------------------
-1. ページ設定
----------------------------------------------------------
 st.set_page_config(page_title="幸せのひとり言AIサポート", page_icon="🍀") st.title("🍀 みなみしょうじ先生の幸せのひとり言AIサポート")
 
----------------------------------------------------------
-2. データベース（先生の言葉）の読み込み
----------------------------------------------------------
 teacher_knowledge = "" read_count = 0 files = glob.glob("*.txt")
 
 for file_name in files: if file_name != "requirements.txt": try: with open(file_name, 'r', encoding='utf-8') as f: teacher_knowledge += f.read() + "\n\n" read_count += 1 except: pass
 
-サイドバー：状態表示
 st.sidebar.header("✨ システム状況") st.sidebar.caption("🚀 Engine: Gemini Pro (安定版)")
 
-if read_count > 0: st.sidebar.success(f"📚 {read_count}個のファイルを読み込み中\n先生の言葉、バッチリ入ってます！") else: st.sidebar.error("⚠️ テキストファイルが見つかりません")
+if read_count > 0: st.sidebar.success(f"📚 {read_count}個のファイルを読み込み中") else: st.sidebar.error("⚠️ テキストファイルが見つかりません")
 
----------------------------------------------------------
-3. 設定メニュー
----------------------------------------------------------
 st.sidebar.markdown("---") st.sidebar.header("✨ サポートタイプ") support_type = st.sidebar.radio( "今のあなたに必要なエネルギーは？", ("子供（純粋・無邪気）", "自立（自分を信じる）", "進化・成長（本来の輝き）") )
 
----------------------------------------------------------
-4. AIの魂（ペルソナ）設定
----------------------------------------------------------
 base_philosophy = f""" あなたは「みなみしょうじ先生」本人ではありませんが、 以下の【先生の言葉（データベース）】を思考の核として持ってください。 ユーザーにとっての「最高の理解者」であり「案内人」として振る舞ってください。
 
 【先生の言葉（データベース）】 {teacher_knowledge}
@@ -41,16 +28,8 @@ if support_type == "子供（純粋・無邪気）": specific_instruction = """ 
 
 full_prompt = base_philosophy + "\n\n" + specific_instruction
 
----------------------------------------------------------
-5. AIモデルの設定
----------------------------------------------------------
-try: genai.configure(api_key=st.secrets["GOOGLE_API_KEY"]) model = genai.GenerativeModel("gemini-pro")
+try: genai.configure(api_key=st.secrets["GOOGLE_API_KEY"]) model = genai.GenerativeModel("gemini-pro") except Exception as e: st.error("設定エラー: APIキーがうまく読み込めませんでした。")
 
-except Exception as e: st.error("設定エラー: APIキーがうまく読み込めませんでした。")
-
----------------------------------------------------------
-6. チャット画面
----------------------------------------------------------
 if "messages" not in st.session_state: st.session_state.messages = []
 
 for message in st.session_state.messages: with st.chat_message(message["role"]): st.write(message["content"])
