@@ -7,90 +7,81 @@ from google import genai
 import glob
 
 
-st.set_page_config(page_title="AI", page_icon="🍀")
+# --- 1. アプリの設定 ---
 
+st.set_page_config(page_title="AI", page_icon="🍀")
 
 st.title("🍀 みなみしょうじ先生AI")
 
 
-# --- 先生の言葉を読み込む ---
+# --- 2. 先生の言葉を読み込む ---
 
 text = ""
 
 files = glob.glob("*.txt")
 
-
 for f in files:
-
+    
     if "req" not in f:
-        
-        content = open(f, encoding='utf-8', errors='ignore').read()
-        
-        text += content + "\n\n"
+        try:
+            # エラーが出ても無視して読み込む
+            data = open(f, encoding='utf-8', errors='ignore').read()
+            text += data + "\n\n"
+        except:
+            pass
 
 
-# --- 新しいAIの設定（google-genai） ---
+# --- 3. AIの準備（ここが最新版です！） ---
 
 try:
-
-    # ここが新しくなりました！
+    
+    # 新しい書き方でAIを用意します
     client = genai.Client(api_key=st.secrets["GOOGLE_API_KEY"])
 
 except:
-
-    st.error("APIキーの設定エラー")
-
-
-# --- チャットの履歴 ---
-
-if "msgs" not in st.session_state:
-
-    st.session_state.msgs = []
+    st.error("エラー：APIキーの設定を確認してください")
 
 
-for m in st.session_state.msgs:
+# --- 4. チャット画面 ---
 
-    with st.chat_message(m["r"]):
+if "history" not in st.session_state:
+    st.session_state.history = []
 
-        st.write(m["c"])
+for m in st.session_state.history:
+    with st.chat_message(m["role"]):
+        st.write(m["message"])
 
 
-# --- チャットのやりとり ---
+# --- 5. 会話する ---
 
-if prompt := st.chat_input("ここに入力"):
+if prompt := st.chat_input("ここに入力してね"):
 
+    # 人間の言葉を表示
     with st.chat_message("user"):
-
         st.write(prompt)
     
-    st.session_state.msgs.append({"r": "user", "c": prompt})
+    st.session_state.history.append({"role": "user", "message": prompt})
 
 
-    prompt_text = "あなたはみなみしょうじ先生です。\n"
-    
-    prompt_text += "【先生の教え】\n" + text + "\n\n"
-    
-    prompt_text += "【会話の履歴】\n"
-    
-    for m in st.session_state.msgs:
+    # AIへの指示文
+    full_prompt = "あなたはみなみしょうじ先生です。\n\n"
+    full_prompt += "【先生の言葉】\n" + text + "\n\n"
+    full_prompt += "【質問】\n" + prompt
+
+
+    # AIに返事をさせる
+    with st.chat_message("assistant"):
         
-        prompt_text += m["r"] + ": " + m["c"] + "\n"
-
-
-    with st.chat_message("ai"):
-
         try:
-            
-            # 新しい操縦方法でAIを動かします
+            # 最新のAI（gemini-1.5-flash）を使います
             response = client.models.generate_content(
-                model="gemini-1.5-flash", 
-                contents=prompt_text
+                model="gemini-1.5-flash",
+                contents=full_prompt
             )
             
             st.write(response.text)
             
-            st.session_state.msgs.append({"r": "ai", "c": response.text})
+            st.session_state.history.append({"role": "assistant", "message": response.text})
             
         except Exception as e:
-            
-            st.error(f"エラー: {e}")
+            st.error(f"エラーが発生しました: {e}")
