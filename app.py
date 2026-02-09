@@ -1,10 +1,8 @@
 import streamlit as st; import google.generativeai as genai; import glob;
 
-st.set_page_config(page_title="幸せのひとり言AIサポート", page_icon="🍀"); st.title("🍀 みなみしょうじ先生の幸せのひとり言AIサポート");
+st.set_page_config(page_title="幸せのひとり言AI", page_icon="🍀"); st.title("🍀 みなみしょうじ先生の幸せのひとり言AIサポート");
 
-teacher_knowledge = ""; files = glob.glob("*.txt");
-
-for file_name in files: if "requirements" not in file_name: try: with open(file_name, 'r', encoding='utf-8') as f: teacher_knowledge += f.read() + "\n\n"; except: pass;
+teacher_knowledge = ""; files = glob.glob("*.txt"); for file_name in files: if "requirements" not in file_name: try: with open(file_name, 'r', encoding='utf-8') as f: teacher_knowledge += f.read() + "\n\n"; except: pass;
 
 st.sidebar.header("システム状況"); st.sidebar.caption("🚀 Engine: Gemini Pro");
 
