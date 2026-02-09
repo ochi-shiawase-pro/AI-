@@ -1,4 +1,6 @@
-mport streamlit as st import google.generativeai as genai import glob
+import streamlit as st 
+import google.generativeai as genai 
+import glob
 
 st.set_page_config(page_title="幸せのひとり言AIサポート", page_icon="🍀") st.title("🍀 みなみしょうじ先生の幸せのひとり言AIサポート")
 
