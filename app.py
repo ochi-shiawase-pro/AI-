@@ -42,13 +42,14 @@ for f in files:
 
 
 
-# --- AIの設定 ---
+# --- AIの設定（ここを最新版に変えました！） ---
 
 try:
 
     genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
-
-    model = genai.GenerativeModel("gemini-pro")
+    
+    # 最新の「gemini-1.5-flash」を使います
+    model = genai.GenerativeModel("gemini-1.5-flash")
 
 except:
 
