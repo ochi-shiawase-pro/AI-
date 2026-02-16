@@ -1,2 +1,5 @@
 streamlit
 google-genai
+streamlit
+google-cloud-aiplatform
+google-auth
