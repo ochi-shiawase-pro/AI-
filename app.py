@@ -7,31 +7,17 @@ import json
 
 # --- 1. アプリの設定 ---
 st.set_page_config(
-    page_title="みなみしょうじ先生の幸せのひとり言✨ - 幸せ♾️AIサポート",
+    page_title="幸せのひとり言　幸せ♾️",
     page_icon="🍀",
     layout="centered"
 )
 
-# --- （ここまでコピー） ---
-# 👇 【ここが強力！】アプリのトップに画像を強制表示します
-# これが表示されれば、裏側の設定も読み込まれている証拠になります
-st.image(
-    "https://raw.githubusercontent.com/ochi-shiawase-pro/AI-/main/Gemini_Generated_Image_spes3cspes3cspes.png",
-    use_container_width=True
-)
+
 
 # 👇 タイトルも強制的に「AIむげん」に書き換えます
 st.markdown("## みなみしょうじ先生の幸せのひとり言")
 
-# SNS用の画像設定（隠し設定）
-st.markdown("""
-<head>
-    <meta property="og:title" content="AIむげん" />
-    <meta property="og:description" content="幸せのひとり言" />
-    <meta property="og:image" content="https://raw.githubusercontent.com/ochi-shiawase-pro/AI-/main/Gemini_Generated_Image_spes3cspes3cspes.png" />
-    <meta name="twitter:card" content="summary_large_image">
-</head>
-""", unsafe_allow_html=True)
+
 
 # --- 🎨 フォントを丸くする魔法 ---
 st.markdown("""
