@@ -26,22 +26,31 @@ if menu == "🍀 みんなの幸せギャラリーを見る":
     st.title("🍀 みんなの幸せギャラリー")
     st.markdown("他の方がシェアしてくださった、むげんちゃんとの温かい対話のおすそ分けです✨")
     
-    import pandas as pd
+    import urllib.request
+    import csv
+    import io
+
     # 👇 さっきコピーしたスプレッドシートのURLをここに貼ります
     sheet_url = "https://docs.google.com/spreadsheets/d/1GmQLhCRRDb4ThQgqeHaR-Q7FN5AXr-7JymnPka_phOE/edit?usp=sharing"
     
     if "pubhtml" in sheet_url:
         csv_url = sheet_url.replace("pubhtml", "pub?output=csv")
         try:
-            # データを強力に読み込む魔法
-            df = pd.read_csv(csv_url)
-            df = df.iloc[::-1] # 新しいものが上に来るように順番をひっくり返す
+            req = urllib.request.Request(csv_url)
+            with urllib.request.urlopen(req) as response:
+                csv_data = response.read().decode('utf-8')
+                
+            reader = csv.reader(io.StringIO(csv_data))
+            header = next(reader) # 1行目を飛ばす
             
-            for index, row in df.iterrows():
+            # 新しいものが上に来るように順番をひっくり返す魔法
+            rows = list(reader)
+            rows.reverse()
+            
+            for row in rows:
                 if len(row) >= 2:
-                    share_text = str(row.iloc[1]) # フォームの回答
+                    share_text = row[1]
                     
-                    # 目印が含まれていれば表示（条件をゆるくして確実に出します！）
                     if "【私の相談】" in share_text:
                         # 過去の「先生」も「むげんちゃん」に書き換える
                         share_text = share_text.replace("【先生のお返事】", "【むげんちゃんからのお返事】")
@@ -63,7 +72,7 @@ if menu == "🍀 みんなの幸せギャラリーを見る":
         except Exception as e:
             st.write("現在、幸せギャラリーを準備中です…🍀")
     
-    # ギャラリーを見ている時は、ここでプログラムをストップ！（下のチャット画面を出さない魔法）
+    # ギャラリーを見ている時は、ここでプログラムをストップ！
     st.stop()
 # === 新しい魔法はここまで ===
 
