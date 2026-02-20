@@ -136,7 +136,7 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
         chat_history_text += f"{role_label}: {text_body}\n\n"
     
     st.download_button(
-        label="📩 この対話を『お守り』として保存する",
+        label="📩 この対話を保存する",
         data=chat_history_text,
         file_name="幸せの対話記録.txt",
         mime="text/plain",
