@@ -19,8 +19,8 @@ st.markdown("<div style='font-size: 18px; font-weight: bold; color: #555;'>み�
 st.markdown("<div style='font-size: 24px; font-weight: bold; margin-bottom: 20px;'>🍀幸せ♾️AIサポート</div>", unsafe_allow_html=True)
 
 # === ここから新しいメニューとギャラリーの魔法 ===
-# 左側にメニューの切り替えスイッチを作ります！
-menu = st.sidebar.radio("🌸 メニュー", ["💬 むげんちゃんとお話しする", "🍀 幸せ♾️"])
+# 💡 サイドバーではなく、画面の真ん中に横並びのボタンを作ります！
+menu = st.radio("🌸 見たい画面を選んでね！", ["💬 むげんちゃんとお話しする", "🍀 幸せ♾️"], horizontal=True)
 
 # もし「みんなの幸せ」が選ばれたら…
 if menu == "🍀 幸せ♾️":
