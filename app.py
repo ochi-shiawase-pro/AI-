@@ -127,7 +127,7 @@ st.write("---")
 if "history" in st.session_state and len(st.session_state.history) > 0:
     
     # ------------------------------------------
-    # 🎁 A: 【自分用】ダウンロードボタン（お守り保存）
+    # 🎁 A: 【自分用】ダウンロードボタン（保存）
     # ------------------------------------------
     chat_history_text = "【みなみしょうじ先生との幸せの対話記録】\n\n"
     for msg in st.session_state.history:
