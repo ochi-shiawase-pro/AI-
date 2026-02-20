@@ -17,7 +17,55 @@ st.set_page_config(
 # 👇 タイトルも強制的に「AIむげん」に書き換えます
 st.markdown("## みなみしょうじ先生の幸せのひとり言")
 
+# === ここから新しいメニューとギャラリーの魔法 ===
+# 左側にメニューの切り替えスイッチを作ります！
+menu = st.sidebar.radio("🌸 メニュー", ["💬 むげんちゃんとお話しする", "🍀 みんなの幸せギャラリーを見る"])
 
+# もし「ギャラリーを見る」が選ばれたら…
+if menu == "🍀 みんなの幸せギャラリーを見る":
+    st.title("🍀 みんなの幸せギャラリー")
+    st.markdown("他の方がシェアしてくださった、むげんちゃんとの温かい対話のおすそ分けです✨")
+    
+    import pandas as pd
+    # 👇 さっきコピーしたスプレッドシートのURLをここに貼ります
+    sheet_url = "https://docs.google.com/spreadsheets/d/1GmQLhCRRDb4ThQgqeHaR-Q7FN5AXr-7JymnPka_phOE/edit?usp=sharing"
+    
+    if "pubhtml" in sheet_url:
+        csv_url = sheet_url.replace("pubhtml", "pub?output=csv")
+        try:
+            # データを強力に読み込む魔法
+            df = pd.read_csv(csv_url)
+            df = df.iloc[::-1] # 新しいものが上に来るように順番をひっくり返す
+            
+            for index, row in df.iterrows():
+                if len(row) >= 2:
+                    share_text = str(row.iloc[1]) # フォームの回答
+                    
+                    # 目印が含まれていれば表示（条件をゆるくして確実に出します！）
+                    if "【私の相談】" in share_text:
+                        # 過去の「先生」も「むげんちゃん」に書き換える
+                        share_text = share_text.replace("【先生のお返事】", "【むげんちゃんからのお返事】")
+                        
+                        if "【むげんちゃんからのお返事】" in share_text:
+                            parts = share_text.split("【むげんちゃんからのお返事】")
+                            user_text = parts[0].replace("【私の相談】", "").strip()
+                            ai_text = parts[1].strip()
+                            
+                            with st.container():
+                                with st.chat_message("user"):
+                                    st.write(user_text)
+                                with st.chat_message("assistant"):
+                                    st.write(ai_text)
+                                st.write("---")
+                        else:
+                            # うまく切れなかった時用の安全ネット
+                            st.info(share_text)
+        except Exception as e:
+            st.write("現在、幸せギャラリーを準備中です…🍀")
+    
+    # ギャラリーを見ている時は、ここでプログラムをストップ！（下のチャット画面を出さない魔法）
+    st.stop()
+# === 新しい魔法はここまで ===
 
 # --- 🎨 フォントを丸くする魔法 ---
 st.markdown("""
@@ -183,56 +231,3 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
         
         st.link_button("💖 コピーしたら、シェア箱へGO！", simple_form_url, use_container_width=True)
 
-# ------------------------------------------
-    # 🌟 C: 【みんなの幸せギャラリー】（一番下に追加）
-    # ------------------------------------------
-    st.write("---")
-    st.markdown("### 🍀 みんなの幸せギャラリー")
-    # 👇 「むげんちゃん」に変更しました！
-    st.markdown("他の方がシェアしてくださった、むげんちゃんとの温かい対話のおすそ分けです✨")
-    
-    import urllib.request
-    import csv
-    import io
-
-    # 👇 1. さっきコピーしたスプレッドシートのURLをここに貼ります
-    sheet_url = "https://docs.google.com/spreadsheets/d/1GmQLhCRRDb4ThQgqeHaR-Q7FN5AXr-7JymnPka_phOE/edit?usp=sharing"
-    
-    # URLが正しい場合のみ、魔法を発動します
-    if "pubhtml" in sheet_url:
-        # 表の見た目ではなく「文字データ」だけを軽く抜き出す魔法のURLに変換
-        csv_url = sheet_url.replace("pubhtml", "pub?output=csv")
-        
-        try:
-            # データを取得します
-            req = urllib.request.Request(csv_url)
-            with urllib.request.urlopen(req) as response:
-                csv_data = response.read().decode('utf-8')
-                
-            reader = csv.reader(io.StringIO(csv_data))
-            header = next(reader) # 1行目（質問のタイトル）を飛ばす
-            
-            # シェアされた言葉を、チャット画面のように綺麗に表示します！
-            for row in reader:
-                if len(row) >= 2: 
-                    share_text = row[1] # フォームの回答が入っている場所
-                    
-                    # ⚠️ ここはプログラムの「目印」なので、このままにしておきます
-                    # 💡 過去の「先生」も「むげんちゃん」に変換する魔法！
-                    share_text = share_text.replace("【先生のお返事】", "【むげんちゃんからのお返事】")
-                    
-                    if "【私の相談】" in share_text and "【むげんちゃんからのお返事】" in share_text:
-                        parts = share_text.split("【むげんちゃんからのお返事】")
-                        user_text = parts[0].replace("【私の相談】", "").strip()
-                        ai_text = parts[1].strip()
-                        
-                        # ✨ ここからが魔法！いつものチャットの吹き出しでお着替え ✨
-                        with st.container():
-                            with st.chat_message("user"):
-                                st.write(user_text)
-                            with st.chat_message("assistant"):
-                                st.write(ai_text)
-                            st.write("---") # 1つの対話が終わるごとに薄い線を引く
-                            
-        except Exception as e:
-            st.write("現在、幸せギャラリーを準備中です…🍀")
