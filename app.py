@@ -112,3 +112,48 @@ if prompt := st.text_area("みなみしょうじ先生の幸せのひとり言�
             st.session_state.history.append({"role": "assistant", "message": response.text})
         except Exception as e:
             st.error(f"エラーが発生しました: {e}")
+
+# ==========================================
+# 💖 幸せの循環・進化機能（ここから追加分）
+# ==========================================
+
+st.write("---") # 1. 画面にきれいな区切り線を引きます
+
+# 会話の履歴（messages）が1つでもある場合のみ、以下のボタンを表示する、という条件です
+if "messages" in st.session_state and len(st.session_state.messages) > 0:
+    
+    # ------------------------------------------
+    # 🎁 A: 【自分用】ダウンロードボタン（お守り保存）
+    # ------------------------------------------
+    # これまでの「あなた」と「先生」の会話をすべて1つの文章にまとめます
+    chat_history_text = "【みなみしょうじ先生との幸せの対話記録】\n\n"
+    for msg in st.session_state.messages:
+        role_label = "先生" if msg["role"] == "assistant" else "あなた"
+        chat_history_text += f"{role_label}: {msg['content']}\n\n"
+    
+    # まとめた文章を「.txt」というファイルにしてダウンロードさせます
+    st.download_button(
+        label="📩 この対話を『お守り』として保存する",
+        data=chat_history_text,
+        file_name="幸せの対話記録.txt",
+        mime="text/plain",
+        use_container_width=True # スマホでも押しやすいよう横いっぱいに広げます
+    )
+
+    # ------------------------------------------
+    # 🍀 B: 【みんな用】自動入力シェアボタン
+    # ------------------------------------------
+    # 履歴の中から「一番新しい先生の言葉」だけを探して取り出します
+    latest_word = ""
+    for m in reversed(st.session_state.messages):
+        if m["role"] == "assistant":
+            latest_word = m["content"]
+            break
+    
+    # ひろみさんが作ったGoogleフォームの「魔法のURL」の土台です
+    base_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform?usp=pp_url&entry.23203884="
+    
+    # 土台のURLの後ろに「最新の先生の言葉」をガッチャンコして、シェア用ボタンを作ります
+    if latest_word:
+        final_share_url = base_url + latest_word
+        st.link_button("💖 この幸せな対話をみんなにシェアする", final_share_url, use_container_width=True)
