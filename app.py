@@ -30,10 +30,13 @@ if menu == "🍀 みんなの幸せギャラリーを見る":
     import csv
     import io
 
-    # 👇 さっきコピーしたスプレッドシートのURLをここに貼ります
-    sheet_url = "https://docs.google.com/spreadsheets/d/1GmQLhCRRDb4ThQgqeHaR-Q7FN5AXr-7JymnPka_phOE/edit?usp=sharing"
+    # 👇 再挑戦！「ウェブに公開」でコピーした【pubhtml】で終わるURLを貼ります
+    sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYRVaaOV4g_Ke4lLpOZcgcjb13dybJIFUCivOOdigJOBKe0oBVLPBiKFwAN9EeArp315j0s9Kk4I-G/pubhtml"
     
-    if "pubhtml" in sheet_url:
+    # URLが「公開用」かどうかをチェックするお助け機能！
+    if "pubhtml" not in sheet_url:
+        st.warning("🚨 URLが『ウェブ公開用』ではないかもしれません！URLが「pubhtml」で終わっているか確認してみてくださいね。")
+    else:
         csv_url = sheet_url.replace("pubhtml", "pub?output=csv")
         try:
             req = urllib.request.Request(csv_url)
@@ -43,32 +46,36 @@ if menu == "🍀 みんなの幸せギャラリーを見る":
             reader = csv.reader(io.StringIO(csv_data))
             header = next(reader) # 1行目を飛ばす
             
-            # 新しいものが上に来るように順番をひっくり返す魔法
             rows = list(reader)
-            rows.reverse()
+            rows.reverse() # 新しいものが上に来るようにする
+            
+            found_count = 0 # ギャラリーに飾った数を数える
             
             for row in rows:
-                if len(row) >= 2:
-                    share_text = row[1]
+                # どの列に入っていても見つけるために、行の文字を合体！
+                share_text = " ".join(row)
+                
+                if "【私の相談】" in share_text:
+                    # 過去の「先生」も「むげんちゃん」に書き換える
+                    share_text = share_text.replace("【先生のお返事】", "【むげんちゃんからのお返事】")
                     
-                    if "【私の相談】" in share_text:
-                        # 過去の「先生」も「むげんちゃん」に書き換える
-                        share_text = share_text.replace("【先生のお返事】", "【むげんちゃんからのお返事】")
+                    if "【むげんちゃんからのお返事】" in share_text:
+                        parts = share_text.split("【むげんちゃんからのお返事】")
+                        # 💡 フォームの質問文を綺麗にカットする新しい魔法！
+                        user_text = parts[0].split("【私の相談】")[-1].strip()
+                        ai_text = parts[1].strip()
                         
-                        if "【むげんちゃんからのお返事】" in share_text:
-                            parts = share_text.split("【むげんちゃんからのお返事】")
-                            user_text = parts[0].replace("【私の相談】", "").strip()
-                            ai_text = parts[1].strip()
-                            
-                            with st.container():
-                                with st.chat_message("user"):
-                                    st.write(user_text)
-                                with st.chat_message("assistant"):
-                                    st.write(ai_text)
-                                st.write("---")
-                        else:
-                            # うまく切れなかった時用の安全ネット
-                            st.info(share_text)
+                        with st.container():
+                            with st.chat_message("user"):
+                                st.write(user_text)
+                            with st.chat_message("assistant"):
+                                st.write(ai_text)
+                            st.write("---")
+                        found_count += 1
+                        
+            if found_count == 0:
+                st.info("データは読み込めましたが、まだ表示できる対話がないようです🌱 もう一度シェアボタンから送ってみてください！")
+                
         except Exception as e:
             st.write("現在、幸せギャラリーを準備中です…🍀")
     
