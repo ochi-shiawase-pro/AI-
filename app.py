@@ -31,6 +31,7 @@ if menu == "🌟 幸せ♾️":
     import urllib.request
     import csv
     import io
+    import time
 
     # 👇 再挑戦！「ウェブに公開」でコピーした【pubhtml】で終わるURLを貼ります
     sheet_url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vSYRVaaOV4g_Ke4lLpOZcgcjb13dybJIFUCivOOdigJOBKe0oBVLPBiKFwAN9EeArp315j0s9Kk4I-G/pubhtml"
@@ -39,7 +40,7 @@ if menu == "🌟 幸せ♾️":
     if "pubhtml" not in sheet_url:
         st.warning("🚨 URLが『ウェブ公開用』ではないかもしれません！URLが「pubhtml」で終わっているか確認してみてくださいね。")
     else:
-        csv_url = sheet_url.replace("pubhtml", "pub?output=csv")
+        csv_url = sheet_url.replace("pubhtml", "pub?output=csv") + "&t=" + str(time.time())
         try:
             req = urllib.request.Request(csv_url)
             with urllib.request.urlopen(req) as response:
