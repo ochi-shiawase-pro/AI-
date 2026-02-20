@@ -155,7 +155,7 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
     # ひろみさんが作ったGoogleフォームのURL
     base_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform?usp=pp_url&entry.23203884="
 
-import urllib.parse # 👈 絵文字や改行をURLで運べるようにする魔法の1行
+    import urllib.parse # 👈 絵文字や改行をURLで運べるようにする魔法の1行
 
     if latest_word:
         # 先生の言葉をインターネットが理解できる形に翻訳します
