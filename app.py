@@ -173,5 +173,5 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
         st.text_area("👇 ここを長押し（パソコンは右クリック）で全選択してコピー", latest_word, height=150)
         
         # 短いプレーンなGoogleフォームのURL（これなら絶対にエラーになりません！）
-        simple_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform"
+        simple_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform?usp=publish-editor"
         st.link_button("💖 コピーしたら、シェア箱へGO！", simple_form_url, use_container_width=True)
