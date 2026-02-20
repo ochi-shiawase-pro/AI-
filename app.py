@@ -15,8 +15,8 @@ st.set_page_config(
 
 
 # 📱 スマホでも綺麗に見える上品なサイズのタイトル魔法
-    st.markdown("<div style='font-size: 18px; font-weight: bold; color: #555;'>みなみしょうじ先生の幸せのひとり言</div>", unsafe_allow_html=True)
-    st.markdown("<div style='font-size: 24px; font-weight: bold; margin-bottom: 20px;'>🍀幸せ♾️AIサポート</div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size: 18px; font-weight: bold; color: #555;'>みなみしょうじ先生の幸せのひとり言</div>", unsafe_allow_html=True)
+st.markdown("<div style='font-size: 24px; font-weight: bold; margin-bottom: 20px;'>🍀幸せ♾️AIサポート</div>", unsafe_allow_html=True)
 
 # === ここから新しいメニューとギャラリーの魔法 ===
 # 左側にメニューの切り替えスイッチを作ります！
