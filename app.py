@@ -169,11 +169,11 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
     
     if latest_ai_word:
         st.write("---")
-        st.markdown("💬 **先生との対話をシェアしませんか？**")
+        st.markdown("💬 **むげんちゃんとの対話をシェアしませんか？**")
         st.markdown("※文字数が多く自動で運べないため、お手数ですが下の枠内の言葉をコピーしてシェア箱に貼り付けてください✨")
         
         # 質問と回答をセットに合体させます！
-        share_text = f"【私の相談】\n{latest_user_word}\n\n【先生のお返事】\n{latest_ai_word}"
+        share_text = f"【私の相談】\n{latest_user_word}\n\n【むげんちゃんのお返事】\n{latest_ai_word}"
         
         # コピー用の枠（両方入るように少し枠を広げました）
         st.text_area("👇 ここを長押し（パソコンは右クリック）で全選択してコピー", share_text, height=300)
@@ -218,9 +218,11 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
                     share_text = row[1] # フォームの回答が入っている場所
                     
                     # ⚠️ ここはプログラムの「目印」なので、このままにしておきます
-                    if "【私の相談】" in share_text and "【先生のお返事】" in share_text:
-                        # 相談と回答をチョキッと切り分けます
-                        parts = share_text.split("【先生のお返事】")
+                    # 💡 過去の「先生」も「むげんちゃん」に変換する魔法！
+                    share_text = share_text.replace("【先生のお返事】", "【むげんちゃんからのお返事】")
+                    
+                    if "【私の相談】" in share_text and "【むげんちゃんからのお返事】" in share_text:
+                        parts = share_text.split("【むげんちゃんからのお返事】")
                         user_text = parts[0].replace("【私の相談】", "").strip()
                         ai_text = parts[1].strip()
                         
