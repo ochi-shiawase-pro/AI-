@@ -18,7 +18,7 @@ st.set_page_config(
 # 📱 スマホでも綺麗に見える上品なサイズのタイトル魔法
 st.markdown("<div style='font-family: serif; font-size: 13px; font-weight: bold; color: #8b7d6b; letter-spacing: 3px; text-shadow: 1px 1px 3px rgba(0,0,0,0.15); margin-bottom: 5px;'>みなみしょうじ先生の幸せのひとり言</div>", unsafe_allow_html=True)
 st.markdown("<div style='font-family: serif; font-size: 24px; font-weight: bold; color: #8b7d6b; letter-spacing: 3px; text-shadow: 1px 1px 3px rgba(0,0,0,0.15); margin-bottom: 20px;'>🍀幸せ♾️AIサポート</div>", unsafe_allow_html=True)
-st.markdown("<div style='font-size: 24px; font-weight: bold; margin-bottom: 20px;'>🍀幸せ♾️AIサポート</div>", unsafe_allow_html=True)
+
 
 # === ここから新しいメニューとギャラリーの魔法 ===
 # 💡 サイドバーではなく、画面の真ん中に横並びのボタンを作ります！
