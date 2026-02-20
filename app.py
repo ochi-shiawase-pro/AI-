@@ -143,35 +143,34 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
         use_container_width=True
     )
 
+   # ------------------------------------------
+    # 🍀 B: 【みんな用】確実なシェアボタン（質問＆回答セット版）
     # ------------------------------------------
-    # 🍀 B: 【みんな用】自動入力シェアボタン
-    # ------------------------------------------
-    latest_word = ""
+    latest_user_word = ""
+    latest_ai_word = ""
+    
+    # 履歴を後ろから見て、最新の「あなた」と「先生」の言葉を両方探します
     for m in reversed(st.session_state.history):
-        if m["role"] == "assistant":
-            latest_word = m.get("message", "")
+        if m["role"] == "assistant" and latest_ai_word == "":
+            latest_ai_word = m.get("message", "")
+        elif m["role"] == "user" and latest_user_word == "":
+            latest_user_word = m.get("message", "")
+            
+        if latest_ai_word != "" and latest_user_word != "":
             break
     
-    # ひろみさんが作ったGoogleフォームのURL
-    base_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform?usp=pp_url&entry.23203884="
-
-    # ------------------------------------------
-    # 🍀 B: 【みんな用】確実なシェアボタン（コピペ方式）
-    # ------------------------------------------
-    latest_word = ""
-    for m in reversed(st.session_state.history):
-        if m["role"] == "assistant":
-            latest_word = m.get("message", "")
-            break
-    
-    if latest_word:
+    if latest_ai_word:
         st.write("---")
-        st.markdown("💬 **先生の言葉をシェアしませんか？**")
+        st.markdown("💬 **先生との対話をシェアしませんか？**")
         st.markdown("※文字数が多く自動で運べないため、お手数ですが下の枠内の言葉をコピーしてシェア箱に貼り付けてください✨")
         
-        # 利用者さんがコピーしやすいように、言葉を四角い枠の中に入れます
-        st.text_area("👇 ここを長押し（パソコンは右クリック）で全選択してコピー", latest_word, height=150)
+        # 質問と回答をセットに合体させます！
+        share_text = f"【私の相談】\n{latest_user_word}\n\n【先生のお返事】\n{latest_ai_word}"
         
-        # 短いプレーンなGoogleフォームのURL（これなら絶対にエラーになりません！）
-        simple_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform?usp=publish-editor"
+        # コピー用の枠（両方入るように少し枠を広げました）
+        st.text_area("👇 ここを長押し（パソコンは右クリック）で全選択してコピー", share_text, height=300)
+        
+        # ⚠️ ここに、ひろみさんが先ほどコピーした「完璧なURL」を貼り付けてください！
+        simple_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform?usp=dialog"
+        
         st.link_button("💖 コピーしたら、シェア箱へGO！", simple_form_url, use_container_width=True)
