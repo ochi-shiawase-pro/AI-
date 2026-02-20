@@ -155,10 +155,23 @@ if "history" in st.session_state and len(st.session_state.history) > 0:
     # ひろみさんが作ったGoogleフォームのURL
     base_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform?usp=pp_url&entry.23203884="
 
-    import urllib.parse # 👈 絵文字や改行をURLで運べるようにする魔法の1行
-
+    # ------------------------------------------
+    # 🍀 B: 【みんな用】確実なシェアボタン（コピペ方式）
+    # ------------------------------------------
+    latest_word = ""
+    for m in reversed(st.session_state.history):
+        if m["role"] == "assistant":
+            latest_word = m.get("message", "")
+            break
+    
     if latest_word:
-        # 先生の言葉をインターネットが理解できる形に翻訳します
-        encoded_word = urllib.parse.quote(latest_word)
-        final_share_url = base_url + encoded_word
-        st.link_button("💖 この幸せな対話をみんなにシェアする", final_share_url, use_container_width=True)
+        st.write("---")
+        st.markdown("💬 **先生の言葉をシェアしませんか？**")
+        st.markdown("※文字数が多く自動で運べないため、お手数ですが下の枠内の言葉をコピーしてシェア箱に貼り付けてください✨")
+        
+        # 利用者さんがコピーしやすいように、言葉を四角い枠の中に入れます
+        st.text_area("👇 ここを長押し（パソコンは右クリック）で全選択してコピー", latest_word, height=150)
+        
+        # 短いプレーンなGoogleフォームのURL（これなら絶対にエラーになりません！）
+        simple_form_url = "https://docs.google.com/forms/d/e/1FAIpQLSdyoBmFj8cRmz_QDbpQ2pQo3BfVfM1g8lURM1vydEvRELKFrw/viewform"
+        st.link_button("💖 コピーしたら、シェア箱へGO！", simple_form_url, use_container_width=True)
