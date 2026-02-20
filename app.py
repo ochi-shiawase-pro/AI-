@@ -24,7 +24,6 @@ menu = st.sidebar.radio("🌸 メニュー", ["💬 むげんちゃんとお話�
 
 # もし「みんなの幸せ」が選ばれたら…
 if menu == "🍀 幸せ♾️":
-    st.title("🍀 幸せ♾️")
     st.markdown("他の方がシェアしてくださった、むげんちゃんとの温かい対話のおすそ分けです✨")
     
     import urllib.request
