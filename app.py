@@ -102,7 +102,7 @@ st.markdown("""
 
 
 # --- 🔑 ログイン＆セキュリティ設定 ---
-with st.expander("🔐 VIPルームへの入り口（パスワード入力）", expanded=True):
+with st.expander("🔐 VIPルームへの入り口", expanded=True):
     vip_password = st.text_input("ここに合言葉を入れてね", type="password")
     
     # ★ここを追加：合言葉が合ってたら「正解！」と出す
