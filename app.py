@@ -154,7 +154,12 @@ if "history" not in st.session_state:
 
 for m in st.session_state.history:
     with st.chat_message(m["role"]):
-        st.write(m["message"])
+        if m["role"] == "assistant":
+            # 🤖 むげんちゃんのお返事の時は「コピーボタン付きの箱（st.code）」にする魔法！
+            st.code(m["message"], language="markdown")
+        else:
+            # 👤 お客様の相談は普通の文字（st.write）のまま！
+            st.write(m["message"])
         
 # 💎 やっぱり最高峰！ Gemini 2.5 Pro 固定
 model = GenerativeModel("gemini-2.5-pro")
@@ -184,7 +189,7 @@ if prompt := st.text_area("みなみしょうじ先生の幸せのひとり言�
         try:
             # ここでお返事を作ります！
             response = model.generate_content(full_prompt)
-            message_placeholder.write(response.text)
+            message_placeholder.code(response.text, language="markdown")
             st.session_state.history.append({"role": "assistant", "message": response.text})
         except Exception as e:
             st.error(f"エラーが発生しました: {e}")
