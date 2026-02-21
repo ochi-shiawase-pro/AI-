@@ -150,8 +150,6 @@ if not text:
 
 # --- 4. チャット画面 ---
 
-# ⚠️ AIの注意書き（免責事項）を小さく表示する魔法
-st.caption("⚠️ むげんちゃんはAIであり、解釈を間違えたりすることがあります。自己責任でご活用くださいね。")
 
 if "history" not in st.session_state:
     st.session_state.history = []
@@ -164,7 +162,14 @@ for m in st.session_state.history:
 model = GenerativeModel("gemini-2.5-pro")
 
 # --- 5. 会話スタート ---
-if prompt := st.text_area("みなみしょうじ先生の幸せのひとり言から〜AIむげんがお返事します✨"):
+# ① まず「入力欄」を画面に出します！（※「if」と「:=」がなくなります）
+prompt = st.text_area("みなみしょうじ先生の幸せのひとり言から〜AIむげんがお返事します✨")
+
+# ② その入力欄の「すぐ下」に注意書きを添えます！
+st.caption("⚠️ むげんちゃんはAIであり、解釈を間違えたりすることがあります。自己責任でご活用くださいね。")
+
+# ③ 入力されたら会話をスタートします！（※ここが新しく「if prompt:」になります）
+if prompt:
     with st.chat_message("user"):
         st.write(prompt)
     st.session_state.history.append({"role": "user", "message": prompt})
