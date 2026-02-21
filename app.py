@@ -110,12 +110,11 @@ with st.expander("🔐 VIPルームへの入り口（パスワード入力）", 
         st.success("🎉 VIPモード認証成功！無限の世界へようこそ✨")
     elif vip_password:
         st.warning("あれ？合言葉が違うみたい…？")
-    else:
-        st.caption("※合言葉がない場合は、お試し5回までとなります。")
+    
 
 # ★パスワード設定（ここを変えてね）
 SECRET_PASSWORD = "777" 
-FREE_LIMIT = 5
+FREE_LIMIT = 1
 
 # --- 2. 最強の鍵（JSON）で認証する ---
 try:
