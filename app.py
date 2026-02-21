@@ -162,13 +162,20 @@ for m in st.session_state.history:
 model = GenerativeModel("gemini-2.5-pro")
 
 # --- 5. 会話スタート ---
-# ① まず「入力欄」を画面に出します！（※「if」と「:=」がなくなります）
-prompt = st.text_area("みなみしょうじ先生の幸せのひとり言から〜AIむげんがお返事します✨")
+# ① VIPルーム（ログイン）との間に「隙間」を作る魔法！
+st.write("")
+st.write("")
 
-# ② その入力欄の「すぐ下」に注意書きを添えます！
+# ② タイトルを大きく、太く目立たせる魔法！（### をつけると見出しになります）
+st.markdown("### ✨ みなみしょうじ先生の幸せのひとり言から〜AIむげんがお返事します ✨")
+
+# ③ 入力欄を置きます！（※元の小さなラベルは「collapsed（隠す）」魔法で消します）
+prompt = st.text_area("相談内容", label_visibility="collapsed")
+
+# ④ 入力欄のすぐ下に注意書きを添えます！
 st.caption("⚠️ むげんちゃんはAIであり、解釈を間違えたりすることがあります。自己責任でご活用くださいね。")
 
-# ③ 入力されたら会話をスタートします！（※ここが新しく「if prompt:」になります）
+# ⑤ 入力されたら会話をスタートします！
 if prompt:
     with st.chat_message("user"):
         st.write(prompt)
