@@ -63,6 +63,8 @@ if menu == "🌟 幸せ♾️":
                     # 過去の「先生」も「むげんちゃん」に書き換える
                     share_text = share_text.replace("【先生のお返事】", "【むげんちゃんからのお返事】")
                     
+                    share_text = share_text.replace("【むげんちゃんのお返事】", "【むげんちゃんからのお返事】")
+                    
                     if "【むげんちゃんからのお返事】" in share_text:
                         parts = share_text.split("【むげんちゃんからのお返事】")
                         # 💡 フォームの質問文を綺麗にカットする新しい魔法！
