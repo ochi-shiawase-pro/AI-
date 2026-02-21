@@ -149,6 +149,10 @@ if not text:
     text = "（先生の言葉データがまだ読み込まれていません。）"
 
 # --- 4. チャット画面 ---
+
+# ⚠️ AIの注意書き（免責事項）を小さく表示する魔法
+st.caption("⚠️ むげんちゃんはAIであり、解釈を間違えたりすることがあります。自己責任でご活用ください🍀")
+
 if "history" not in st.session_state:
     st.session_state.history = []
 
