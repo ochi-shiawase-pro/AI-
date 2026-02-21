@@ -26,7 +26,7 @@ menu = st.radio("🌸 画面を選んでね！", ["💬 AIむげんちゃんと�
 
 # もし「幸せ♾️」が選ばれたら…
 if menu == "🌟 幸せ♾️":
-    st.markdown("AIむげんちゃんとの会話をシェアしてくださったお友達の皆様に感謝です✨")
+    st.markdown("AIむげんちゃんとのお宝会話♡をお友達がシェアしてくださいました✨")
     
     import urllib.request
     import csv
