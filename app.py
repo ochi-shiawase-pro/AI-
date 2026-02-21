@@ -166,7 +166,7 @@ st.write("")
 st.write("")
 
 # ② タイトルを大きく、太く目立たせる魔法！（###### をつけると見出しになります）
-st.markdown("###### 🌱 AIむげんちゃん✨とお話しする🌱")
+st.markdown("###### 🌱AIむげんちゃんとお話しする🌱")
 
 # ③ 入力欄を置きます！（※元の小さなラベルは「collapsed（隠す）」魔法で消します）
 prompt = st.text_area("相談内容", label_visibility="collapsed")
