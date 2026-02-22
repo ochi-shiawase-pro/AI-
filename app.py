@@ -116,6 +116,12 @@ with st.expander("🔐 VIPルームへの入り口", expanded=True):
 SECRET_PASSWORD = "777" 
 FREE_LIMIT = 1
 
+# 🛡️ お財布を守る最強のガードマン（ここから追加！）
+if vip_password != SECRET_PASSWORD:  # パスワードが合っていない場合
+    if "trial_count" in st.session_state and st.session_state.trial_count >= FREE_LIMIT:
+        st.error("🌱 お試し回数が終了しました！続きは合言葉を入れてVIPルームでお楽しみください✨")
+        st.stop()  # 👈 ここで扉をガシャン！と閉めます
+        
 # --- 2. 最強の鍵（JSON）で認証する ---
 try:
     if "gcp_service_account" in st.secrets:
