@@ -118,7 +118,8 @@ FREE_LIMIT = 1
 
 # 🛡️ お財布を守る最強のガードマン（ここから追加！）
 if vip_password != SECRET_PASSWORD:  # パスワードが合っていない場合
-    if "trial_count" in st.session_state and st.session_state.trial_count >= FREE_LIMIT:
+    # 👇 「会話の履歴（history）の数」でチェックする絶対にすり抜けられない魔法！
+    if "history" in st.session_state and len(st.session_state.history) >= FREE_LIMIT * 2:
         st.error("🌱 お試し回数が終了しました！続きは合言葉を入れてVIPルームでお楽しみください✨")
         st.stop()  # 👈 ここで扉をガシャン！と閉めます
         
