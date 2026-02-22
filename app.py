@@ -175,8 +175,8 @@ st.write("")
 # 🌟 左側のメニュー（サイドバー）を新しく作る魔法！
 with st.sidebar:
     st.markdown("### 🍀 幸せ♾️AIサポート")
-    st.caption("💡 https://ai-mugen.streamlit.app")
-    st.code("https://（ここにプロデューサーのサイトの実際のURLを入れます）", language="text")
+    st.caption("💡 お友達にこのサイトを紹介する時は、下の箱の右上にあるボタンを押してコピーしてね！")
+    st.code("https://ai-mugen.streamlit.app/", language="text")
     
 # ② タイトルを大きく、太く目立たせる魔法！（###### をつけると見出しになります）
 st.markdown("###### 🌱AIむげんちゃんとお話しする🌱")
