@@ -179,11 +179,11 @@ with st.sidebar:
     # 📦 1. 小さくて可愛いURLの箱
     st.text_input("シェアURL", "https://ai-mugen.streamlit.app/", label_visibility="collapsed")
 
-     # 📱 2. 自動で生成される魔法のQRコード
-     st.write("---") # 区切り線
-     st.markdown("📷 **スマホで読み取る**")
-     # ↓この魔法のURLが、自動でサイトのQRコード画像を作ってくれます！
-     qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://ai-mugen.streamlit.app/"
+    # 📱 2. 自動で生成される魔法のQRコード
+    st.write("---") # 区切り線
+    st.markdown("📷 **スマホで読み取る**")
+    # ↓この魔法のURLが、自動でサイトのQRコード画像を作ってくれます！
+    qr_code_url = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://ai-mugen.streamlit.app/"
     st.image(qr_code_url, width=150)
     
 # ② タイトルを大きく、太く目立たせる魔法！（###### をつけると見出しになります）
