@@ -172,6 +172,12 @@ model = GenerativeModel("gemini-2.5-pro")
 st.write("")
 st.write("")
 
+# 🌟 左側のメニュー（サイドバー）を新しく作る魔法！
+with st.sidebar:
+    st.markdown("### 🍀 幸せ♾️AIサポート")
+    st.caption("💡 https://ai-mugen.streamlit.app")
+    st.code("https://（ここにプロデューサーのサイトの実際のURLを入れます）", language="text")
+    
 # ② タイトルを大きく、太く目立たせる魔法！（###### をつけると見出しになります）
 st.markdown("###### 🌱AIむげんちゃんとお話しする🌱")
 
